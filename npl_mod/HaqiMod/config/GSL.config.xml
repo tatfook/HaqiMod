@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sample GSL server config file -->
+<GSL>
+<!--game server modules that should be loaded in per game world thread. Dependency and async loading is supported, so that 
+some modules can call other system or module functions asynchrounously and use the result for initialization.
+-->
+<modules>
+  <module src="script/apps/Aries/Combat/ServerObject/CombatService.lua"></module>
+  <module src="script/kids/3DMapSystemItem/PowerItemService.lua"></module>
+</modules>
+<GridServer>
+  <!--
+  @param worldfilter:  it is internally to lower cased
+  @param MinStartUser: minimum user count to start the grid node
+  @param MaxStartUser: max allowed user count. if this is specified, the worldteam_server server_object needs to be used to start the server. 
+  -->
+  <GridNodeRules>
+    <!-- empty rule(worldfilter) maps to any world-->
+    <rule fromx="20000" fromy="20000" />
+  </GridNodeRules>
+</GridServer>
+<GatewayServer nidfilter=".*">
+</GatewayServer>
+</GSL>
