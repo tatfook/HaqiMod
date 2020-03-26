@@ -1,0 +1,7 @@
+<!-- All NPCs that the client should known about. This file is only used by the client in GameClient.config.xml -->
+<ServerWorld>
+  <ServerAgents>
+    <ServerAgent name="aries_combat_system" server_class="script/apps/Aries/Combat/ServerObject/combat_server.lua" client_class="script/apps/Aries/Combat/ServerObject/combat_client.lua">
+    </ServerAgent>
+  </ServerAgents>
+</ServerWorld>
