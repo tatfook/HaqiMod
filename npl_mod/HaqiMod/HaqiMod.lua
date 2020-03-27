@@ -34,11 +34,30 @@ function HaqiMod.Join()
     -- start server
     HaqiMod.StartServer()
 
-	client = client or System.GSL.client:new({});
-    client:LoginServer("", "", GameLogic.GetWorldDirectory(), {
-        is_local_instance = true,
-        create_join = true,
-    })
+    client = client or System.GSL.client:new({});
+
+    local function DoLogin_()
+        if(HaqiMod.IsServerReady()) then
+            client:LoginServer("localuser", "", GameLogic.GetWorldDirectory(), {
+                is_local_instance = true,
+                create_join = true,
+            })
+            return true;
+        end
+    end
+    
+    local tryCount = 0;
+    local mytimer = commonlib.Timer:new({callbackFunc = function(timer)
+        if(not DoLogin_() and tryCount < 5) then
+            tryCount = tryCount + 1;
+            timer:Change(tryCount*1000)
+        end
+    end})
+    mytimer:Change(1000)
+end
+
+function HaqiMod.IsServerReady()
+    return GameServer and GameServer.isReady;
 end
 
 function HaqiMod.StartServer()
