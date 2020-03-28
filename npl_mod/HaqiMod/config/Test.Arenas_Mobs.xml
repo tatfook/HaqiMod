@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<arenas>
+  <difficulty_modifier>
+    <modifier mode="easy" hp="1" damage="1" resist="1" />
+    <modifier mode="normal" hp="1" damage="1" resist="1" />
+    <modifier mode="hard" hp="1" damage="1" resist="1" />
+  </difficulty_modifier>
+
+  <arena players_max="1" ai_module="" position="19958, -128, 20003" id="10001" respawn_interval_easy="99999000" respawn_interval="99999000" respawn_interval_hard="99999000" facing="0" uid="20100921T110229.890625-61" _internal_selected_="False" label="">
+    <mob mob_template="" />
+    <mob mob_template="npl_mod/HaqiMod/config/TestMobTemplate_Lv1.xml" />
+    <mob mob_template="" />
+    <mob mob_template="" />
+	<!-- <match_item gsid="50350" count="1" /> -->
+  </arena>
+</arenas>

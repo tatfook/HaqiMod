@@ -2,6 +2,9 @@
 <ServerWorld>
   <ServerAgents>
     <ServerAgent name="aries_combat_system" server_class="script/apps/Aries/Combat/ServerObject/combat_server.lua" client_class="script/apps/Aries/Combat/ServerObject/combat_client.lua">
+      <npc id="sAriesCombat">
+        <arenas_mobs config=""/>
+      </npc>
     </ServerAgent>
   </ServerAgents>
 </ServerWorld>

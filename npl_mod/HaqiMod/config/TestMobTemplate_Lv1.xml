@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mobtemplate>
+  <mob 	ai_module="Genes_Attacker" 
+  			guard_distance="5" 
+  			guarding_range="10"
+  			random_walk_range="5" 
+  			joybean_count="0" 
+  			 
+  			displayname="烈焰香橙"
+  			name="Mob"
+  			scale="1"
+  			asset="character/v5/10mobs/HaqiTown/OrangeBaby/OrangeBaby.x"  
+  			uid="20100703T071757.562500-415"  
+  			
+  			level="1"
+  			phase="fire" 
+  			hp="90"
+  			power_pip_percent="1000" 
+  			startup_pips_normal="1" 
+  			startup_pips_power="1"
+  			is_immune_to_dispel="true"  
+  			  			
+				resist_death_percent="0"
+				resist_life_percent="0"
+				resist_storm_percent="0"
+				resist_fire_percent="0"
+				resist_ice_percent="0"
+		
+				damage_death_percent="0"
+				damage_life_percent="0"
+				damage_storm_percent="0"
+				damage_fire_percent="-35"
+				damage_ice_percent="0"
+		
+				accuracy_fire_percent="100"
+				accuracy_storm_percent="100"
+				accuracy_ice_percent="100"
+				accuracy_death_percent="100"
+				accuracy_life_percent="100"
+				
+				available_cards="(22366,10)(22101,10)(22115,2)(22116,2)" 
+  			 				
+  			speak_dead="你已将我击败，恭喜通关。" 
+  			experience_pts="0"
+  			loot1=""   			 
+  			/>
+  <cardsets>
+    <set id="1" cards="(22101,10)(22115,2)(22116,2)"/>   
+  </cardsets>
+  
+  <sequences>
+  <sequence>
+  <round round="1" card="Ice_GlobalShield" accuracy_boost="1000" target_hostile="threat_highest" target_friendly="self" />
+  <round round="2" card="22109" accuracy_boost="1000" target_hostile="threat_highest" target_friendly="self" />
+  <round round="3" card="22103" accuracy_boost="1000" target_hostile="threat_highest" target_friendly="max_max_hp" />
+  <round round="4" card="22111" accuracy_boost="1000" target_hostile="threat_highest" target_friendly="max_max_hp" />
+  <round round="5" card="22142" accuracy_boost="1000" target_hostile="threat_highest" target_friendly="self" />
+  <round round="6" card="22177" accuracy_boost="1000" target_hostile="threat_highest" target_friendly="max_max_hp" />
+  </sequence>
+  </sequences>
+  
+  
+</mobtemplate>

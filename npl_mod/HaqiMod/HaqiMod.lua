@@ -15,6 +15,10 @@ local HaqiMod = commonlib.inherit(nil, NPL.export())
 HaqiMod.gsl_config_filename = "npl_mod/HaqiMod/config/GSL.config.xml"
 HaqiMod.clientconfig_file = "npl_mod/HaqiMod/config/HaqiGameClient.config.xml";
 
+-- debugging only
+--HaqiMod.dump_client_msg = true
+--HaqiMod.dump_server_msg = true
+
 local client;
 
 function HaqiMod.IsHaqi()
@@ -38,7 +42,13 @@ function HaqiMod.Join()
 
     local function DoLogin_()
         if(HaqiMod.IsServerReady()) then
-            client:LoginServer("localuser", "", GameLogic.GetWorldDirectory(), {
+            local WorldManager = commonlib.gettable("MyCompany.Aries.WorldManager");
+            local worldinfo = WorldManager:GetCurrentWorld();
+            -- @Note： this will fake the client to use "Test.Arena_Mobs.xml" regardless of real world path
+            worldinfo.name = "Test";
+            worldinfo.worldpath = "temp/localuser/Test/"
+
+            client:LoginServer("localuser", "", worldinfo.worldpath, {
                 is_local_instance = true,
                 create_join = true,
             })
@@ -46,6 +56,8 @@ function HaqiMod.Join()
         end
     end
     
+    
+
     local tryCount = 0;
     local mytimer = commonlib.Timer:new({callbackFunc = function(timer)
         if(not DoLogin_() and tryCount < 5) then
@@ -60,15 +72,21 @@ function HaqiMod.IsServerReady()
     return GameServer and GameServer.isReady;
 end
 
+-- start server in main thread, the server may take several seconds to start. 
+-- use HaqiMod.IsServerReady()
 function HaqiMod.StartServer()
     if(HaqiMod.isServerStarted) then
         return
     end
     HaqiMod.isServerStarted = true;
 
+    local gateway = commonlib.gettable("System.GSL.gateway");
+    gateway.ignoreWebGSLStat = true;
+
     local gsl_system_file = "script/apps/GameServer/GSL_system.lua";
     local gsl_gateway_file = "script/apps/GameServer/GSL_gateway.lua";
-        
+    System.GSL.dump_client_msg = HaqiMod.dump_client_msg
+
     -- start the worker as GSL server mode
     NPL.activate(gsl_system_file, {type="restart", 
         config = {
@@ -76,7 +94,7 @@ function HaqiMod.StartServer()
             ws_id = "", 
             gsl_config_filename = HaqiMod.gsl_config_filename,
             addr = "",
-            debug = false, -- true to dump log for every message 
+            debug = HaqiMod.dump_server_msg, -- true to dump log for every message 
             log_level = LOG.level,
             gm_uac = "everyone",
             locale = "zhCN",
