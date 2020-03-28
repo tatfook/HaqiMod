@@ -21,10 +21,6 @@ HaqiMod.clientconfig_file = "npl_mod/HaqiMod/config/HaqiGameClient.config.xml";
 
 local client;
 
-function HaqiMod.IsHaqi()
-    return not System.options.mc;
-end
-
 -- join the current world
 function HaqiMod.Join()
     if(not HaqiMod.IsHaqi()) then
@@ -42,6 +38,12 @@ function HaqiMod.Join()
 
     local function DoLogin_()
         if(HaqiMod.IsServerReady()) then
+            HaqiMod.InstallFakeHaqiAPI();
+            NPL.load("(gl)script/apps/Aries/Combat/main.lua");
+            MyCompany.Aries.Combat.Init();
+            local BasicArena = commonlib.gettable("MyCompany.Aries.Quest.NPCs.BasicArena");
+            BasicArena.allowWithoutPetCombat = true;
+
             local WorldManager = commonlib.gettable("MyCompany.Aries.WorldManager");
             local worldinfo = WorldManager:GetCurrentWorld();
             -- @Note： this will fake the client to use "Test.Arena_Mobs.xml" regardless of real world path
@@ -55,8 +57,6 @@ function HaqiMod.Join()
             return true;
         end
     end
-    
-    
 
     local tryCount = 0;
     local mytimer = commonlib.Timer:new({callbackFunc = function(timer)
@@ -68,10 +68,6 @@ function HaqiMod.Join()
     mytimer:Change(1000)
 end
 
-function HaqiMod.IsServerReady()
-    return GameServer and GameServer.isReady;
-end
-
 -- start server in main thread, the server may take several seconds to start. 
 -- use HaqiMod.IsServerReady()
 function HaqiMod.StartServer()
@@ -79,6 +75,8 @@ function HaqiMod.StartServer()
         return
     end
     HaqiMod.isServerStarted = true;
+
+    GameLogic:Connect("WorldUnloaded", HaqiMod, HaqiMod.OnWorldUnload, "UniqueConnection")
 
     local gateway = commonlib.gettable("System.GSL.gateway");
     gateway.ignoreWebGSLStat = true;
@@ -101,3 +99,54 @@ function HaqiMod.StartServer()
         }
     });
 end
+
+function HaqiMod.IsHaqi()
+    return not System.options.mc;
+end
+
+function HaqiMod.IsServerReady()
+    return GameServer and GameServer.isReady;
+end
+
+function HaqiMod:OnWorldUnload()
+    -- we shall log out silently. 
+    System.GSL_client:EnableReceive(false);
+
+    NPL.load("(gl)script/apps/Aries/NPCs/Combat/39000_BasicArena.lua");
+    MyCompany.Aries.Quest.NPCs.BasicArena.EnableGlobalTimer(false);
+
+    -- reset combat msg handler. 
+    NPL.load("(gl)script/apps/Aries/Combat/MsgHandler.lua");
+    local MsgHandler = commonlib.gettable("MyCompany.Aries.Combat.MsgHandler");
+    MsgHandler.ResetUI()
+end
+
+
+-- in case paracraft does not have some haqi API, we will create fake placeholders here. 
+function HaqiMod.InstallFakeHaqiAPI()
+    if(HaqiMod.fakeAPIInited) then
+        return;
+    end
+    HaqiMod.fakeAPIInited = true;
+    if(HaqiMod.IsHaqi()) then
+        return
+    end
+
+    local VIP = commonlib.gettable("MyCompany.Aries.VIP");
+    VIP.IsVIP = VIP.IsVIP or function() return false end
+
+    HaqiMod.PrepareFakeUserItems();
+end
+
+function HaqiMod.PrepareFakeUserItems()
+    NPL.load("(gl)script/kids/3DMapSystemItem/ItemManager.lua");
+    local ItemManager = commonlib.gettable("System.Item.ItemManager");
+    -- make sure we have bag 0
+    ItemManager.bags[0] = ItemManager.bags[0] or {};
+
+    -- shall we insert some preset cards to combat bags?
+    NPL.load("(gl)script/apps/Aries/Inventory/Cards/MyCardsManager.lua");
+    local MyCardsManager = commonlib.gettable("MyCompany.Aries.Inventory.Cards.MyCardsManager");
+    -- self.combat_bags
+end
+
