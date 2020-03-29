@@ -2,7 +2,7 @@
 <mobtemplate>
   <mob 	ai_module="Genes_Attacker" 
   			guard_distance="5" 
-  			guarding_range="10"
+  			guarding_range="5"
   			random_walk_range="5" 
   			joybean_count="0" 
   			 

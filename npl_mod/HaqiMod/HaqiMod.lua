@@ -31,7 +31,10 @@ function HaqiMod.Join()
     NPL.load("(gl)script/apps/GameServer/GSL.lua");
     NPL.load("(gl)script/apps/Aries/Combat/ServerObject/combat_client.lua");
 
-    System.User.nid = System.User.nid or System.User.keepworkUsername or "default";
+    if(System.User.nid and (tonumber(System.User.nid) or 0) == 0) then
+        System.User.nid = "localuser" or System.User.keepworkUsername;
+        -- GameLogic.EntityManager.GetPlayer():GetInnerObject():SetName(System.User.nid);
+    end
 
     -- start server
     HaqiMod.StartServer()
@@ -56,6 +59,10 @@ function HaqiMod.Join()
             -- @Note： this will fake the client to use "Test.Arena_Mobs.xml" regardless of real world path
             worldinfo.name = "Test";
             worldinfo.worldpath = "temp/localuser/Test/"
+            worldinfo.can_reverse_time = false;
+            worldinfo.enter_combat_range = 5;
+            worldinfo.enter_combat_range_sq = worldinfo.enter_combat_range ^ 2;
+            worldinfo.alert_combat_range_sq = (worldinfo.enter_combat_range + 3)^ 2;
 
             client:LoginServer("localuser", "", worldinfo.worldpath, {
                 is_local_instance = true,
@@ -141,6 +148,9 @@ function HaqiMod.InstallFakeHaqiAPI()
     local VIP = commonlib.gettable("MyCompany.Aries.VIP");
     VIP.IsVIP = VIP.IsVIP or function() return false end
 
+    NPL.load("(gl)script/apps/Aries/Scene/EffectManager.lua");
+    MyCompany.Aries.EffectManager.Init();
+    
     HaqiMod.PrepareFakeUserItems();
 end
 
