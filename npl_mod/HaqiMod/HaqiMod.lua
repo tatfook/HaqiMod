@@ -10,6 +10,8 @@ local HaqiMod = NPL.load("HaqiMod");
 HaqiMod.Join()
 -------------------------------------------------------
 ]]
+local ItemManager = commonlib.gettable("System.Item.ItemManager");
+local MsgHandler = commonlib.gettable("MyCompany.Aries.Combat.MsgHandler");
 local HaqiMod = commonlib.inherit(nil, NPL.export())
 
 HaqiMod.gsl_config_filename = "npl_mod/HaqiMod/config/GSL.config.xml"
@@ -28,7 +30,7 @@ function HaqiMod.Join()
     end
     NPL.load("(gl)script/apps/GameServer/GSL.lua");
     NPL.load("(gl)script/apps/Aries/Combat/ServerObject/combat_client.lua");
-    
+
     System.User.nid = System.User.nid or System.User.keepworkUsername or "default";
 
     -- start server
@@ -36,10 +38,15 @@ function HaqiMod.Join()
 
     client = client or System.GSL.client:new({});
 
+    MsgHandler.gslClient = client;
+
     local function DoLogin_()
         if(HaqiMod.IsServerReady()) then
             HaqiMod.InstallFakeHaqiAPI();
             NPL.load("(gl)script/apps/Aries/Combat/main.lua");
+            if(ItemManager.SyncGlobalStore()) then
+                MyCompany.Aries.Combat.Init_OnGlobalStoreLoaded()
+            end
             MyCompany.Aries.Combat.Init();
             local BasicArena = commonlib.gettable("MyCompany.Aries.Quest.NPCs.BasicArena");
             BasicArena.allowWithoutPetCombat = true;
@@ -60,7 +67,7 @@ function HaqiMod.Join()
 
     local tryCount = 0;
     local mytimer = commonlib.Timer:new({callbackFunc = function(timer)
-        if(not DoLogin_() and tryCount < 5) then
+        if(not DoLogin_() and tryCount < 10) then
             tryCount = tryCount + 1;
             timer:Change(tryCount*1000)
         end
@@ -116,9 +123,8 @@ function HaqiMod:OnWorldUnload()
     MyCompany.Aries.Quest.NPCs.BasicArena.EnableGlobalTimer(false);
 
     -- reset combat msg handler. 
-    NPL.load("(gl)script/apps/Aries/Combat/MsgHandler.lua");
-    local MsgHandler = commonlib.gettable("MyCompany.Aries.Combat.MsgHandler");
     MsgHandler.ResetUI()
+    MsgHandler.gslClient = nil;
 end
 
 
@@ -139,14 +145,11 @@ function HaqiMod.InstallFakeHaqiAPI()
 end
 
 function HaqiMod.PrepareFakeUserItems()
-    NPL.load("(gl)script/kids/3DMapSystemItem/ItemManager.lua");
-    local ItemManager = commonlib.gettable("System.Item.ItemManager");
     -- make sure we have bag 0
     ItemManager.bags[0] = ItemManager.bags[0] or {};
 
     -- shall we insert some preset cards to combat bags?
-    NPL.load("(gl)script/apps/Aries/Inventory/Cards/MyCardsManager.lua");
     local MyCardsManager = commonlib.gettable("MyCompany.Aries.Inventory.Cards.MyCardsManager");
-    -- self.combat_bags
+    MyCardsManager.combat_bags = {{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
 end
 
