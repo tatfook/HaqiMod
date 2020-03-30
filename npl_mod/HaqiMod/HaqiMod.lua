@@ -28,9 +28,7 @@ function HaqiMod.Join()
     if(not HaqiMod.IsHaqi()) then
         System.options.clientconfig_file = HaqiMod.clientconfig_file;
     end
-    NPL.load("(gl)script/apps/GameServer/GSL.lua");
-    NPL.load("(gl)script/apps/Aries/Combat/ServerObject/combat_client.lua");
-
+    
     System.User.nid = "localuser"; --  or System.User.keepworkUsername;
     
     -- start server
@@ -87,6 +85,8 @@ function HaqiMod.StartServer()
     if(HaqiMod.isServerStarted) then
         return
     end
+    NPL.load("(gl)script/apps/GameServer/GSL.lua");
+    
     HaqiMod.isServerStarted = true;
 
     GameLogic:Connect("WorldUnloaded", HaqiMod, HaqiMod.OnWorldUnload, "UniqueConnection")
