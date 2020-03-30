@@ -31,11 +31,8 @@ function HaqiMod.Join()
     NPL.load("(gl)script/apps/GameServer/GSL.lua");
     NPL.load("(gl)script/apps/Aries/Combat/ServerObject/combat_client.lua");
 
-    if(System.User.nid and (tonumber(System.User.nid) or 0) == 0) then
-        System.User.nid = "localuser" or System.User.keepworkUsername;
-        -- GameLogic.EntityManager.GetPlayer():GetInnerObject():SetName(System.User.nid);
-    end
-
+    System.User.nid = "localuser"; --  or System.User.keepworkUsername;
+    
     -- start server
     HaqiMod.StartServer()
 
