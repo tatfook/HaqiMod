@@ -148,6 +148,7 @@ function HaqiMod.InstallFakeHaqiAPI()
     local VIP = commonlib.gettable("MyCompany.Aries.VIP");
     VIP.IsVIP = VIP.IsVIP or function() return false end
 
+
     NPL.load("(gl)script/apps/Aries/Scene/EffectManager.lua");
     MyCompany.Aries.EffectManager.Init();
     
@@ -161,5 +162,9 @@ function HaqiMod.PrepareFakeUserItems()
     -- shall we insert some preset cards to combat bags?
     local MyCardsManager = commonlib.gettable("MyCompany.Aries.Inventory.Cards.MyCardsManager");
     MyCardsManager.combat_bags = {{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
+
+    -- default commbat level, should be bigger than 10 or 30 to prevent user hint tips
+    local localuser = commonlib.gettable("MyCompany.Aries.Combat.localuser");
+    localuser.combatlel = 50;
 end
 
