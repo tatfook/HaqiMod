@@ -43,8 +43,10 @@ function HaqiMod.Join()
 
     MsgHandler.gslClient = client;
 
+    HaqiMod.CheckLoadModels()
+    
     local function DoLogin_()
-        if(HaqiMod.IsServerReady()) then
+        if(HaqiMod.IsServerReady() and HaqiMod.resourceLoaded) then
             HaqiMod.InstallFakeHaqiAPI();
             NPL.load("(gl)script/apps/Aries/Combat/main.lua");
             if(ItemManager.SyncGlobalStore()) then
@@ -135,6 +137,16 @@ function HaqiMod:OnWorldUnload()
 end
 
 
+function HaqiMod.CheckLoadModels()
+    if(not HaqiMod.resourceLoaded) then
+        NPL.load("(gl)script/apps/Aries/Combat/ObjectManager.lua");
+        local ObjectManager = commonlib.gettable("MyCompany.Aries.Combat.ObjectManager");
+        ObjectManager.SyncEssentialCombatResourceMini(function()
+            HaqiMod.resourceLoaded = true;
+        end);
+    end
+end
+
 -- in case paracraft does not have some haqi API, we will create fake placeholders here. 
 function HaqiMod.InstallFakeHaqiAPI()
     if(HaqiMod.fakeAPIInited) then
@@ -151,6 +163,9 @@ function HaqiMod.InstallFakeHaqiAPI()
 
     NPL.load("(gl)script/apps/Aries/Scene/EffectManager.lua");
     MyCompany.Aries.EffectManager.Init();
+    
+    NPL.load("(gl)script/apps/Aries/Combat/SpellPlayer.lua");
+    MyCompany.Aries.Combat.SpellPlayer.Init();
     
     HaqiMod.PrepareFakeUserItems();
 end
