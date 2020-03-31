@@ -58,6 +58,7 @@ function HaqiMod.Join()
             worldinfo.worldpath = "temp/localuser/Test/"
             worldinfo.can_reverse_time = false;
             worldinfo.enter_combat_range = 5;
+            -- worldinfo.immortal_after_combat = true;
             worldinfo.enter_combat_range_sq = worldinfo.enter_combat_range ^ 2;
             worldinfo.alert_combat_range_sq = (worldinfo.enter_combat_range + 3)^ 2;
 
@@ -77,6 +78,14 @@ function HaqiMod.Join()
         end
     end})
     mytimer:Change(1000)
+end
+
+-- disconnect from server and delete world entities
+function HaqiMod.Logout()
+    if(HaqiMod.isServerStarted) then
+        client:LogoutServer(true)
+        -- MyCompany.Aries.Combat.Init();
+    end
 end
 
 -- start server in main thread, the server may take several seconds to start. 
@@ -131,6 +140,9 @@ function HaqiMod:OnWorldUnload()
     -- reset combat msg handler. 
     MsgHandler.ResetUI()
     MsgHandler.gslClient = nil;
+
+    NPL.load("(gl)script/apps/Aries/Quest/NPC.lua");
+	MyCompany.Aries.Quest.NPC.OnWorldClosing();
 end
 
 
@@ -173,7 +185,7 @@ function HaqiMod.PrepareFakeUserItems()
 
     -- shall we insert some preset cards to combat bags?
     local MyCardsManager = commonlib.gettable("MyCompany.Aries.Inventory.Cards.MyCardsManager");
-    MyCardsManager.combat_bags = {{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
+    MyCardsManager.combat_bags = {{gsid=22142,},{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
 
     -- default commbat level, should be bigger than 10 or 30 to prevent user hint tips
     local localuser = commonlib.gettable("MyCompany.Aries.Combat.localuser");
