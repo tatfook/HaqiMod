@@ -25,7 +25,11 @@ local client;
 
 -- join the current world
 function HaqiMod.Join()
-    if(not HaqiMod.IsHaqi()) then
+    if(HaqiMod.IsHaqi()) then
+        NPL.load("(gl)script/apps/Aries/Desktop/GameMemoryProtector.lua");
+        local GameMemoryProtector = commonlib.gettable("MyCompany.Aries.Desktop.GameMemoryProtector");
+        GameMemoryProtector.StopMonitor();
+    else
         System.options.clientconfig_file = HaqiMod.clientconfig_file;
     end
     
@@ -106,7 +110,7 @@ function HaqiMod.StartServer()
     local gsl_system_file = "script/apps/GameServer/GSL_system.lua";
     local gsl_gateway_file = "script/apps/GameServer/GSL_gateway.lua";
     System.GSL.dump_client_msg = HaqiMod.dump_client_msg
-
+    System.options.localGSL = true; -- this will make sure all power item manager uses local data instead of fetching DB server. 
     -- start the worker as GSL server mode
     NPL.activate(gsl_system_file, {type="restart", 
         config = {
@@ -162,20 +166,19 @@ function HaqiMod.InstallFakeHaqiAPI()
         return;
     end
     HaqiMod.fakeAPIInited = true;
-    if(HaqiMod.IsHaqi()) then
-        return
+
+    if(not HaqiMod.IsHaqi()) then
+        local VIP = commonlib.gettable("MyCompany.Aries.VIP");
+        VIP.IsVIP = VIP.IsVIP or function() return false end
+
+
+        NPL.load("(gl)script/apps/Aries/Scene/EffectManager.lua");
+        MyCompany.Aries.EffectManager.Init();
+        
+        NPL.load("(gl)script/apps/Aries/Combat/SpellPlayer.lua");
+        MyCompany.Aries.Combat.SpellPlayer.Init();
     end
 
-    local VIP = commonlib.gettable("MyCompany.Aries.VIP");
-    VIP.IsVIP = VIP.IsVIP or function() return false end
-
-
-    NPL.load("(gl)script/apps/Aries/Scene/EffectManager.lua");
-    MyCompany.Aries.EffectManager.Init();
-    
-    NPL.load("(gl)script/apps/Aries/Combat/SpellPlayer.lua");
-    MyCompany.Aries.Combat.SpellPlayer.Init();
-    
     HaqiMod.PrepareFakeUserItems();
 end
 
