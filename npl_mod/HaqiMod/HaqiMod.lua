@@ -202,5 +202,5 @@ end
 function HaqiMod.PrepareConfigFiles()
     local filename = Files.WorldPathToFullPath("mod/Haqi/Haqi.Arenas_Mobs.xml")
     ParaIO.CreateDirectory(filename);
-    local Files.ResolveFilePath(filename)
+    local relativeFilename = Files.ResolveFilePath(filename)
 end
