@@ -7,12 +7,14 @@ use the lib:
 -------------------------------------------------------
 NPL.load("npl_packages/HaqiMod/");
 local HaqiMod = NPL.load("HaqiMod");
+HaqiMod.PrepareConfigFiles();
 HaqiMod.Join()
 -------------------------------------------------------
 ]]
 local ItemManager = commonlib.gettable("System.Item.ItemManager");
 local MsgHandler = commonlib.gettable("MyCompany.Aries.Combat.MsgHandler");
 local HaqiMod = commonlib.inherit(nil, NPL.export())
+local Files = commonlib.gettable("MyCompany.Aries.Game.Common.Files");
 
 HaqiMod.gsl_config_filename = "npl_mod/HaqiMod/config/GSL.config.xml"
 HaqiMod.clientconfig_file = "npl_mod/HaqiMod/config/HaqiGameClient.config.xml";
@@ -62,6 +64,7 @@ function HaqiMod.Join()
             worldinfo.worldpath = "temp/localuser/Test/"
             worldinfo.can_reverse_time = false;
             worldinfo.enter_combat_range = 5;
+            worldinfo.is_standalone = true;
             -- worldinfo.immortal_after_combat = true;
             worldinfo.enter_combat_range_sq = worldinfo.enter_combat_range ^ 2;
             worldinfo.alert_combat_range_sq = (worldinfo.enter_combat_range + 3)^ 2;
@@ -195,3 +198,9 @@ function HaqiMod.PrepareFakeUserItems()
     localuser.combatlel = 50;
 end
 
+-- prepare all configuration files in current world directory
+function HaqiMod.PrepareConfigFiles()
+    local filename = Files.WorldPathToFullPath("mod/Haqi/Haqi.Arenas_Mobs.xml")
+    ParaIO.CreateDirectory(filename);
+    local Files.ResolveFilePath(filename)
+end
