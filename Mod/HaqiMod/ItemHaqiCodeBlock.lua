@@ -23,18 +23,18 @@ local ItemHaqiCodeBlock = commonlib.inherit(commonlib.gettable("MyCompany.Aries.
 local langConfigFile = "haqi"
 local codeLanguageType = "npl"
 -- add color to the code block using 8bit color data
-local color8_data = 0xe0e0; 
+local color8_data = 0x0500; 
 block_types.RegisterItemClass("ItemHaqiCodeBlock", ItemHaqiCodeBlock);
 
 function ItemHaqiCodeBlock:ctor()
 end
 
 function ItemHaqiCodeBlock:GetLangIconDisplayText(langName)
-	return "haqi";
+	return "";
 end
 
 function ItemHaqiCodeBlock:GetLangTooltipText(langName)
-	return "魔法哈奇编辑器";
+	return "";
 end
 
 function ItemHaqiCodeBlock:TryCreate(itemStack, entityPlayer, x,y,z, side, data, side_region)
