@@ -20,7 +20,7 @@ local ItemStack = commonlib.gettable("MyCompany.Aries.Game.Items.ItemStack");
 local ItemHaqiCodeBlock = commonlib.inherit(commonlib.gettable("MyCompany.Aries.Game.Items.Item"), commonlib.gettable("MyCompany.Aries.Game.Items.ItemHaqiCodeBlock"));
 
 
-local langConfigFile = "npl"
+local langConfigFile = "haqi"
 local codeLanguageType = "npl"
 -- add color to the code block using 8bit color data
 local color8_data = 0xe0e0; 

@@ -35,8 +35,8 @@ function HaqiMod:init()
 		if(blocks) then
 			NPL.load("(gl)Mod/HaqiMod/ItemHaqiCodeBlock.lua");
 			blocks[#blocks+1] = {name="block", attr={ name="HaqiCodeBlock",
-				id = block_id, item_class="ItemNplMicroRobotBlock", text=L"哈奇编辑器",
-				icon = "Texture/blocks/codeblock_on.png",
+				id = block_id, item_class="ItemHaqiCodeBlock", text=L"哈奇编辑器",
+				icon = "Texture/Aries/Dock/Web/dragon_bg_blue_light_32bits.png;0 0 74 74",
 			}}
 			LOG.std(nil, "info", "HaqiMod", "HaqiCodeBlock is registered");
 
