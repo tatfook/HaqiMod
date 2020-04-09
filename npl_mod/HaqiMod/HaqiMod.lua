@@ -7,7 +7,8 @@ use the lib:
 -------------------------------------------------------
 NPL.load("npl_packages/HaqiMod/");
 local HaqiMod = NPL.load("HaqiMod");
-HaqiMod.Join()
+HaqiMod.Logout();
+HaqiMod.Join();
 -------------------------------------------------------
 ]]
 local ItemManager = commonlib.gettable("System.Item.ItemManager");
@@ -37,6 +38,8 @@ function HaqiMod.Join()
     
     System.User.nid = "localuser"; --  or System.User.keepworkUsername;
     
+    -- HaqiMod.Logout();
+
     -- start server
     HaqiMod.StartServer()
 
@@ -48,7 +51,7 @@ function HaqiMod.Join()
     
     local function DoLogin_()
         if(HaqiMod.IsServerReady() and HaqiMod.resourceLoaded) then
-            -- HaqiMod.PrepareConfigFiles();
+            HaqiMod.PrepareConfigFiles();
             HaqiMod.InstallFakeHaqiAPI();
             NPL.load("(gl)script/apps/Aries/Combat/main.lua");
             if(ItemManager.SyncGlobalStore()) then
@@ -92,7 +95,28 @@ end
 function HaqiMod.Logout()
     if(HaqiMod.isServerStarted) then
         client:LogoutServer(true)
-        -- MyCompany.Aries.Combat.Init();
+        client:EnableReceive(false);
+
+        NPL.load("(gl)script/apps/Aries/NPCs/Combat/39000_BasicArena.lua");
+        MyCompany.Aries.Quest.NPCs.BasicArena.EnableGlobalTimer(false);
+
+        local ObjectManager = commonlib.gettable("MyCompany.Aries.Combat.ObjectManager");
+        ObjectManager.DestroyAllArenaAndMobs();
+        
+        -- reset combat msg handler. 
+        MsgHandler.ResetUI()
+        MsgHandler.gslClient = nil;
+        MsgHandler.Init();
+
+        NPL.load("(gl)script/apps/Aries/Combat/ServerObject/arena_server.lua");
+        local Arena = commonlib.gettable("MyCompany.Aries.Combat_Server.Arena");
+        Arena.UnloadAllConfigFiles();
+
+        NPL.load("(gl)script/apps/Aries/Combat/ServerObject/mob_server.lua");
+        local Mob = commonlib.gettable("MyCompany.Aries.Combat_Server.Mob");
+        Mob.ClearTemplates()
+
+        System.GSL.system:OnAllServicesLoaded();
     end
 end
 
@@ -142,12 +166,8 @@ function HaqiMod:OnWorldUnload()
     -- we shall log out silently. 
     System.GSL_client:EnableReceive(false);
     configDirty = {}
-    NPL.load("(gl)script/apps/Aries/NPCs/Combat/39000_BasicArena.lua");
-    MyCompany.Aries.Quest.NPCs.BasicArena.EnableGlobalTimer(false);
 
-    -- reset combat msg handler. 
-    MsgHandler.ResetUI()
-    MsgHandler.gslClient = nil;
+    HaqiMod.Logout()
 
     NPL.load("(gl)script/apps/Aries/Quest/NPC.lua");
 	MyCompany.Aries.Quest.NPC.OnWorldClosing();
