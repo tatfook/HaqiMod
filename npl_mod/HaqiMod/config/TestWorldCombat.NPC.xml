@@ -6,28 +6,5 @@
         <arenas_mobs config="npl_mod/HaqiMod/config/Test.Arenas_Mobs.xml" isinstance="true"/>
       </npc>
     </ServerAgent>
-    <!--
-    <ServerAgent name="aries_powerapi" server_class="script/kids/3DMapSystemItem/ServerObject/PowerAPI_server.lua" client_class="script/kids/3DMapSystemItem/ServerObject/PowerAPI_client.lua">
-      <npc id="sPowerAPI">
-      </npc>
-    </ServerAgent>
-    <ServerAgent name="wisp" server_class="script/apps/Aries/ServerObjects/Wisp/30397_wisp_server.lua" client_class="script/apps/Aries/ServerObjects/Wisp/30397_wisp_client.lua">
-      <npc id="s30397">
-        <wisp_scene config="config/Aries/Wisp/Instance_Test.Wisp_Scene.xml"/>
-      </npc>
-    </ServerAgent>
-    <ServerAgent name="quest" server_class="script/apps/Aries/Quest/QuestServer.lua" client_class="script/apps/Aries/Quest/QuestClient.lua">
-      <npc id="quest10000">
-      </npc>
-    </ServerAgent>
-    <ServerAgent name="trade" server_class="script/apps/GameServer/TradeService/GSL_TradeService.lua" client_class="script/apps/GameServer/TradeService/GSL_TradeClient.lua">
-      <npc id="trade">
-      </npc>
-    </ServerAgent>
-    <ServerAgent name="aries_worldteam_system" server_class="script/apps/Aries/Combat/Team/worldteam_server.lua" client_class="script/apps/Aries/Combat/Team/worldteam_client.lua">
-      <npc id="worldteam">
-      </npc>
-    </ServerAgent>
-    -->
   </ServerAgents>
 </ServerWorld>

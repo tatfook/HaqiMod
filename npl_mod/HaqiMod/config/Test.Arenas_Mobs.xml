@@ -11,6 +11,5 @@
     <mob mob_template="npl_mod/HaqiMod/config/TestMobTemplate_Lv1.xml" />
     <mob mob_template="" />
     <mob mob_template="" />
-	<!-- <match_item gsid="50350" count="1" /> -->
   </arena>
 </arenas>

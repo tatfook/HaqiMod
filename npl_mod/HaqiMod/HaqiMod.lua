@@ -7,7 +7,6 @@ use the lib:
 -------------------------------------------------------
 NPL.load("npl_packages/HaqiMod/");
 local HaqiMod = NPL.load("HaqiMod");
-HaqiMod.PrepareConfigFiles();
 HaqiMod.Join()
 -------------------------------------------------------
 ]]
@@ -23,6 +22,7 @@ HaqiMod.clientconfig_file = "npl_mod/HaqiMod/config/HaqiGameClient.config.xml";
 --HaqiMod.dump_client_msg = true
 --HaqiMod.dump_server_msg = true
 
+local configDirty = {}
 local client;
 
 -- join the current world
@@ -48,6 +48,7 @@ function HaqiMod.Join()
     
     local function DoLogin_()
         if(HaqiMod.IsServerReady() and HaqiMod.resourceLoaded) then
+            -- HaqiMod.PrepareConfigFiles();
             HaqiMod.InstallFakeHaqiAPI();
             NPL.load("(gl)script/apps/Aries/Combat/main.lua");
             if(ItemManager.SyncGlobalStore()) then
@@ -140,7 +141,7 @@ end
 function HaqiMod:OnWorldUnload()
     -- we shall log out silently. 
     System.GSL_client:EnableReceive(false);
-
+    configDirty = {}
     NPL.load("(gl)script/apps/Aries/NPCs/Combat/39000_BasicArena.lua");
     MyCompany.Aries.Quest.NPCs.BasicArena.EnableGlobalTimer(false);
 
@@ -174,7 +175,6 @@ function HaqiMod.InstallFakeHaqiAPI()
         local VIP = commonlib.gettable("MyCompany.Aries.VIP");
         VIP.IsVIP = VIP.IsVIP or function() return false end
 
-
         NPL.load("(gl)script/apps/Aries/Scene/EffectManager.lua");
         MyCompany.Aries.EffectManager.Init();
         
@@ -198,9 +198,89 @@ function HaqiMod.PrepareFakeUserItems()
     localuser.combatlel = 50;
 end
 
+function HaqiMod.GetFileContent(filename)
+    local file = ParaIO.open(filename, "r")
+    if(file) then
+        local text = file:GetText(0, -1)
+        file:close();
+        return text;
+    end
+end
+
+-- mark a given config file dirty
+function HaqiMod.SetArenaModified(bDirty)
+    configDirty["arenas"] = bDirty ~= false;
+end
+function HaqiMod.IsArenaModified()
+    return configDirty["arenas"];
+end
+
 -- prepare all configuration files in current world directory
 function HaqiMod.PrepareConfigFiles()
-    local filename = Files.WorldPathToFullPath("mod/Haqi/Haqi.Arenas_Mobs.xml")
+    local filename = Files.WorldPathToFullPath("mod/Haqi/")
     ParaIO.CreateDirectory(filename);
-    local relativeFilename = Files.ResolveFilePath(filename)
+    local WorldCombatFilename = Files.WorldPathToFullPath("mod/Haqi/HaqiWorldCombat.NPC.xml")
+    local relativeWorldCombatFilename = Files.ResolveFilePath(WorldCombatFilename).relativeToRootPath
+
+    local ArenasMobsFilename = Files.WorldPathToFullPath("mod/Haqi/Haqi.Arenas_Mobs.xml")
+    local relativeArenasMobsFilename = Files.ResolveFilePath(ArenasMobsFilename).relativeToRootPath
+
+    local DefaultMobTemplateFilename = Files.WorldPathToFullPath("mod/Haqi/DefaultMobTemplate.xml")
+    local relativeDefaultMobTemplateFilename = Files.ResolveFilePath(DefaultMobTemplateFilename).relativeToRootPath
+
+    local GSLConfigFilename = Files.WorldPathToFullPath("mod/Haqi/GSL.config.xml")
+    local relativeGSLConfigFilename = Files.ResolveFilePath(GSLConfigFilename).relativeToRootPath
+    if( not ParaIO.DoesFileExist(GSLConfigFilename) ) then
+        local file = ParaIO.open(GSLConfigFilename, "w")
+        if(file) then
+            local text = HaqiMod.GetFileContent(HaqiMod.gsl_config_filename)
+            if(text) then
+                text = text:gsub("npl_mod/HaqiMod/config/TestWorldCombat%.NPC%.xml", relativeWorldCombatFilename)
+                file:WriteString(text);
+            end
+            file:close();
+        end
+    end
+    System.GSL.config:load(GSLConfigFilename)
+
+    if( not ParaIO.DoesFileExist(WorldCombatFilename) ) then
+        local file = ParaIO.open(WorldCombatFilename, "w")
+        if(file) then
+            local text = HaqiMod.GetFileContent("npl_mod/HaqiMod/config/TestWorldCombat.NPC.xml")
+            if(text) then
+                text = text:gsub("npl_mod/HaqiMod/config/Test%.Arenas_Mobs%.xml", relativeArenasMobsFilename)
+                file:WriteString(text);
+            end
+            file:close();
+        end
+    end
+
+    if( not ParaIO.DoesFileExist(ArenasMobsFilename) or HaqiMod.IsArenaModified()) then
+        local file = ParaIO.open(ArenasMobsFilename, "w")
+        if(file) then
+            local text = HaqiMod.GetFileContent("npl_mod/HaqiMod/config/Test.Arenas_Mobs.xml")
+            if(text) then
+                text = text:gsub("<arena .*</arena>", string.format([[
+    <arena players_max="1" ai_module="" position="19958, -126, 20003" id="10001" respawn_interval_easy="99999000" respawn_interval="99999000" respawn_interval_hard="99999000" facing="0" uid="20100921T110229.890625-61" label="">
+        <mob mob_template="" />
+        <mob mob_template="%s" />
+        <mob mob_template="" />
+        <mob mob_template="" />
+    </arena>
+]], relativeDefaultMobTemplateFilename))
+                file:WriteString(text);
+            end
+            file:close();
+        end
+    end
+    if( not ParaIO.DoesFileExist(DefaultMobTemplateFilename) ) then
+        local file = ParaIO.open(DefaultMobTemplateFilename, "w")
+        if(file) then
+            local text = HaqiMod.GetFileContent("npl_mod/HaqiMod/config/TestMobTemplate_Lv1.xml")
+            if(text) then
+                file:WriteString(text);
+            end
+            file:close();
+        end
+    end
 end
