@@ -303,7 +303,7 @@ function HaqiMod.PrepareConfigFiles()
         end
     end
     -- reload GSL config and restart
-    if(not HaqiMod.isServerStarted) then
+    if(HaqiMod.isServerStarted) then
         System.GSL.config:load(GSLConfigFilename);
         System.GSL_grid:Restart();
     end
