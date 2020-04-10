@@ -44,7 +44,6 @@ function HaqiMod.Join()
     -- HaqiMod.Logout();
 
     -- start server
-    HaqiMod.PrepareConfigFiles();
     HaqiMod.StartServer()
 
     client = client or System.GSL.client:new({});
@@ -55,6 +54,7 @@ function HaqiMod.Join()
     
     local function DoLogin_()
         if(HaqiMod.IsServerReady() and HaqiMod.resourceLoaded) then
+            HaqiMod.PrepareConfigFiles();
             HaqiMod.InstallFakeHaqiAPI();
             NPL.load("(gl)script/apps/Aries/Combat/main.lua");
             if(ItemManager.SyncGlobalStore()) then
@@ -302,11 +302,6 @@ function HaqiMod.PrepareConfigFiles()
             file:close();
         end
     end
-    -- reload GSL config and restart
-    if(HaqiMod.isServerStarted) then
-        System.GSL.config:load(GSLConfigFilename);
-        System.GSL_grid:Restart();
-    end
 
     if( not ParaIO.DoesFileExist(WorldCombatFilename) ) then
         local file = ParaIO.open(WorldCombatFilename, "w")
@@ -336,4 +331,8 @@ function HaqiMod.PrepareConfigFiles()
             file:close();
         end
     end
+
+    -- reload GSL config and restart
+    System.GSL.config:load(GSLConfigFilename);
+    System.GSL_grid:Restart();
 end
