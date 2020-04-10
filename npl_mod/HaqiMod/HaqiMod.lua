@@ -13,6 +13,7 @@ HaqiMod.Join();
 ]]
 local ItemManager = commonlib.gettable("System.Item.ItemManager");
 local MsgHandler = commonlib.gettable("MyCompany.Aries.Combat.MsgHandler");
+local Arena = NPL.load("./Arena.lua");
 local HaqiMod = commonlib.inherit(nil, NPL.export())
 local Files = commonlib.gettable("MyCompany.Aries.Game.Common.Files");
 
@@ -20,11 +21,13 @@ HaqiMod.gsl_config_filename = "npl_mod/HaqiMod/config/GSL.config.xml"
 HaqiMod.clientconfig_file = "npl_mod/HaqiMod/config/HaqiGameClient.config.xml";
 
 -- debugging only
-HaqiMod.dump_client_msg = true
-HaqiMod.dump_server_msg = true
+-- HaqiMod.dump_client_msg = true
+-- HaqiMod.dump_server_msg = true
 
 local configDirty = {}
 local client;
+-- all editable arenas on client side
+HaqiMod.Arenas = {};
 
 -- join the current world
 function HaqiMod.Join()
@@ -167,6 +170,8 @@ function HaqiMod:OnWorldUnload()
     -- we shall log out silently. 
     System.GSL_client:EnableReceive(false);
     configDirty = {}
+    HaqiMod.Arenas = {};
+    HaqiMod.curArena = nil;
 
     HaqiMod.Logout()
 
@@ -206,13 +211,19 @@ function HaqiMod.InstallFakeHaqiAPI()
     HaqiMod.PrepareFakeUserItems();
 end
 
+-- set cards for current local player
+-- @param cards: such as {{gsid=22142,},{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
+function HaqiMod.setMyCards(cards)
+    HaqiMod.myCards = cards or {};
+end
+
 function HaqiMod.PrepareFakeUserItems()
     -- make sure we have bag 0
     ItemManager.bags[0] = ItemManager.bags[0] or {};
 
-    -- shall we insert some preset cards to combat bags?
+    -- set my cards
     local MyCardsManager = commonlib.gettable("MyCompany.Aries.Inventory.Cards.MyCardsManager");
-    MyCardsManager.combat_bags = {{gsid=22142,},{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
+    MyCardsManager.combat_bags = HaqiMod.myCards or {{gsid=22142,},{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},};
 
     -- default commbat level, should be bigger than 10 or 30 to prevent user hint tips
     local localuser = commonlib.gettable("MyCompany.Aries.Combat.localuser");
@@ -225,6 +236,35 @@ function HaqiMod.GetFileContent(filename)
         local text = file:GetText(0, -1)
         file:close();
         return text;
+    end
+end
+
+function HaqiMod.removeArena(name)
+    if(HaqiMod.Arenas[name]) then
+        HaqiMod.Arenas[name] = nil;
+        HaqiMod.SetArenaModified()
+    end
+end
+
+function HaqiMod.removeAllArenas()
+    if(next(HaqiMod.Arenas)) then
+        HaqiMod.Arenas = {};
+        HaqiMod.SetArenaModified()
+    end
+end
+
+
+
+function HaqiMod.createArena(name, x, y, z)
+    HaqiMod.curArena = Arena:new():Init(name, x, y, z);
+    HaqiMod.Arenas[name] = HaqiMod.curArena;
+    HaqiMod.SetArenaModified()
+end
+
+function HaqiMod.addArenaMob(index, name, assetFile)
+    if(HaqiMod.curArena) then
+        HaqiMod.curArena:AddMob(index, name, assetFile);
+        HaqiMod.SetArenaModified()
     end
 end
 
@@ -283,24 +323,12 @@ function HaqiMod.PrepareConfigFiles()
         if(file) then
             local text = HaqiMod.GetFileContent("npl_mod/HaqiMod/config/Haqi.Arenas_Mobs.xml")
             if(text) then
-                text = text:gsub("<arena .*</arena>", string.format([[
-    <arena players_max="1" ai_module="" position="19958, -126, 20003" id="10001" respawn_interval_easy="99999000" respawn_interval="99999000" respawn_interval_hard="99999000" facing="0" uid="20100921T110229.890625-61" label="">
-        <mob mob_template="" />
-        <mob mob_template="%s" />
-        <mob mob_template="" />
-        <mob mob_template="" />
-    </arena>
-]], relativeDefaultMobTemplateFilename))
-                file:WriteString(text);
-            end
-            file:close();
-        end
-    end
-    if( not ParaIO.DoesFileExist(DefaultMobTemplateFilename) ) then
-        local file = ParaIO.open(DefaultMobTemplateFilename, "w")
-        if(file) then
-            local text = HaqiMod.GetFileContent("npl_mod/HaqiMod/config/HaqiMobTemplate_Lv1.xml")
-            if(text) then
+                local arenas_text = "";
+                for name, arena in pairs(HaqiMod.Arenas) do
+                    arenas_text = arenas_text..arena:GetConfigXMLText()
+                    arena:GenerateMobTemplateFiles(false) -- no overwrite
+                end
+                text = text:gsub("<arena .*</arena>", arenas_text)
                 file:WriteString(text);
             end
             file:close();
