@@ -16,7 +16,7 @@ some modules can call other system or module functions asynchrounously and use t
   -->
   <GridNodeRules>
     <!-- empty rule(worldfilter) maps to any world-->
-    <rule MinStartUser="1" MaxStartUser="1" npc_file="npl_mod/HaqiMod/config/TestWorldCombat.NPC.xml" fromx="20000" fromy="20000"/>
+    <rule MinStartUser="1" MaxStartUser="1" npc_file="npl_mod/HaqiMod/config/HaqiWorldCombat.NPC.xml" fromx="20000" fromy="20000"/>
     <!-- <rule fromx="20000" fromy="20000" /> -->
   </GridNodeRules>
 </GridServer>

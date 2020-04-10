@@ -8,7 +8,7 @@
 
   <arena players_max="1" ai_module="" position="19958, -128, 20003" id="10001" respawn_interval_easy="99999000" respawn_interval="99999000" respawn_interval_hard="99999000" facing="0" uid="20100921T110229.890625-61" label="">
     <mob mob_template="" />
-    <mob mob_template="npl_mod/HaqiMod/config/TestMobTemplate_Lv1.xml" />
+    <mob mob_template="npl_mod/HaqiMod/config/HaqiMobTemplate_Lv1.xml" />
     <mob mob_template="" />
     <mob mob_template="" />
   </arena>
