@@ -303,8 +303,10 @@ function HaqiMod.PrepareConfigFiles()
         end
     end
     -- reload GSL config and restart
-    System.GSL.config:load(GSLConfigFilename);
-    System.GSL_grid:Restart();
+    if(not HaqiMod.isServerStarted) then
+        System.GSL.config:load(GSLConfigFilename);
+        System.GSL_grid:Restart();
+    end
 
     if( not ParaIO.DoesFileExist(WorldCombatFilename) ) then
         local file = ParaIO.open(WorldCombatFilename, "w")
