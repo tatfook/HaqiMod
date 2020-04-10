@@ -44,6 +44,7 @@ function HaqiMod.Join()
     -- HaqiMod.Logout();
 
     -- start server
+    HaqiMod.PrepareConfigFiles();
     HaqiMod.StartServer()
 
     client = client or System.GSL.client:new({});
@@ -54,7 +55,6 @@ function HaqiMod.Join()
     
     local function DoLogin_()
         if(HaqiMod.IsServerReady() and HaqiMod.resourceLoaded) then
-            HaqiMod.PrepareConfigFiles();
             HaqiMod.InstallFakeHaqiAPI();
             NPL.load("(gl)script/apps/Aries/Combat/main.lua");
             if(ItemManager.SyncGlobalStore()) then
