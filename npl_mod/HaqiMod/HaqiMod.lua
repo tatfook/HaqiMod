@@ -39,6 +39,9 @@ function HaqiMod.Join()
         System.options.clientconfig_file = HaqiMod.clientconfig_file;
     end
     
+    if(not HaqiMod.oldNid) then
+        HaqiMod.oldNid = System.User.nid
+    end
     System.User.nid = "localuser"; --  or System.User.keepworkUsername;
     
     -- HaqiMod.Logout();
@@ -176,7 +179,12 @@ function HaqiMod:OnWorldUnload()
     HaqiMod.Logout()
 
     NPL.load("(gl)script/apps/Aries/Quest/NPC.lua");
-	MyCompany.Aries.Quest.NPC.OnWorldClosing();
+    MyCompany.Aries.Quest.NPC.OnWorldClosing();
+    
+    if(HaqiMod.oldNid) then
+        System.User.nid = HaqiMod.oldNid
+        HaqiMod.oldNid = nil;
+    end
 end
 
 
