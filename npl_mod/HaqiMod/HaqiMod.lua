@@ -284,6 +284,22 @@ function HaqiMod.IsArenaModified()
     return configDirty["arenas"];
 end
 
+-- @return array of filenames relative to world path
+function HaqiMod.GetEditableFiles()
+    local filenames = {};
+    if(HaqiMod.Arenas) then
+        local fileMap = {};
+        for name, arena in pairs(HaqiMod.Arenas) do
+            for _, filename in ipairs(arena:GetEditableFiles() or {}) do
+                if(not fileMap[filename]) then
+                    fileMap[filename] = true
+                    filenames[#filenames+1] = Files.ResolveFilePath(filename).relativeToWorldPath or filename;
+                end
+            end
+        end
+    end
+    return filenames;
+end
 -- prepare all configuration files in current world directory
 function HaqiMod.PrepareConfigFiles()
     local filename = Files.WorldPathToFullPath("mod/Haqi/")

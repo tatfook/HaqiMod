@@ -58,3 +58,18 @@ function Arena:GenerateMobTemplateFiles(bOverwrite)
         end
     end
 end
+
+-- @return array of filenames full path
+function Arena:GetEditableFiles()
+    local filenames = {};
+    for i=1, 4 do
+        local mob = self.mobs[i]
+        if(mob and mob.name) then
+            local filename = mob:GetConfigFileNameFullpath()
+            if(filename) then
+                filenames[#filenames + 1] = filename;
+            end
+        end
+    end
+    return filenames;
+end
