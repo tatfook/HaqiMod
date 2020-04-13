@@ -223,6 +223,9 @@ end
 -- @param cards: such as {{gsid=22142,},{gsid=22153,},{gsid=22153,},{gsid=22146,},{gsid=43143,},{gsid=43143,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},{gsid=0,},}
 function HaqiMod.setMyCards(cards)
     HaqiMod.myCards = cards or {};
+    -- set my cards
+    local MyCardsManager = commonlib.gettable("MyCompany.Aries.Inventory.Cards.MyCardsManager");
+    MyCardsManager.combat_bags = HaqiMod.myCards;
 end
 
 function HaqiMod.PrepareFakeUserItems()
