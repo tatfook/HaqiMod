@@ -11,8 +11,10 @@ HaqiMod.Logout();
 HaqiMod.Join();
 -------------------------------------------------------
 ]]
+NPL.load("(gl)script/apps/Aries/Combat/MsgHandler.lua");
 local ItemManager = commonlib.gettable("System.Item.ItemManager");
 local MsgHandler = commonlib.gettable("MyCompany.Aries.Combat.MsgHandler");
+local Combat = commonlib.gettable("MyCompany.Aries.Combat");
 local Arena = NPL.load("./Arena.lua");
 local HaqiMod = commonlib.inherit(nil, NPL.export())
 local Files = commonlib.gettable("MyCompany.Aries.Game.Common.Files");
@@ -64,6 +66,10 @@ function HaqiMod.Join()
                 MyCompany.Aries.Combat.Init_OnGlobalStoreLoaded()
             end
             MyCompany.Aries.Combat.Init();
+
+            -- join with full HP
+            MsgHandler.SetCurrentHP(MsgHandler.GetMaxHP())
+
             local BasicArena = commonlib.gettable("MyCompany.Aries.Quest.NPCs.BasicArena");
             BasicArena.allowWithoutPetCombat = true;
 
@@ -113,7 +119,7 @@ function HaqiMod.Logout()
         MsgHandler.ResetUI()
         MsgHandler.gslClient = nil;
         MsgHandler.Init();
-
+        
         NPL.load("(gl)script/apps/Aries/Combat/ServerObject/arena_server.lua");
         local Arena = commonlib.gettable("MyCompany.Aries.Combat_Server.Arena");
         Arena.UnloadAllConfigFiles();
@@ -181,6 +187,8 @@ function HaqiMod:OnWorldUnload()
     NPL.load("(gl)script/apps/Aries/Quest/NPC.lua");
     MyCompany.Aries.Quest.NPC.OnWorldClosing();
     
+    MyCompany.Aries.Combat.localuser = nil;
+
     if(HaqiMod.oldNid) then
         System.User.nid = HaqiMod.oldNid
         HaqiMod.oldNid = nil;
@@ -238,7 +246,7 @@ function HaqiMod.PrepareFakeUserItems()
 
     -- default commbat level, should be bigger than 10 or 30 to prevent user hint tips
     local localuser = commonlib.gettable("MyCompany.Aries.Combat.localuser");
-    localuser.combatlel = 50;
+    localuser.combatlel = localuser.combatlel or 50;
 end
 
 function HaqiMod.GetFileContent(filename)
@@ -362,4 +370,25 @@ function HaqiMod.PrepareConfigFiles()
     -- reload GSL config and restart
     System.GSL.config:load(GSLConfigFilename);
     System.GSL_grid:Restart();
+end
+
+function HaqiMod.SetCurrentHP(hpValue)
+    MsgHandler.SetCurrentHP(hpValue)
+end
+
+function HaqiMod.GetCurrentHP()
+    return MsgHandler.GetCurrentHP()
+end
+
+-- set equipment addon value for the current player. 
+-- @param name: "combatlel", "addonlevel_hp_absolute", "addonlevel_damage_percent", "addonlevel_resilience_percent", 
+-- "addonlevel_criticalstrike_percent", "addonlevel_resist_absolute"
+function HaqiMod.SetUserValue(name, value)
+    local localuser = commonlib.gettable("MyCompany.Aries.Combat.localuser"); 
+    localuser[name] = value
+end
+
+function HaqiMod.GetUserValue(name)
+    local localuser = commonlib.gettable("MyCompany.Aries.Combat.localuser"); 
+    return localuser[name]
 end
